@@ -1,5 +1,6 @@
 package com.paymedia.test.project.service;
 
+import com.paymedia.test.project.dto.EmployeeDTO;
 import com.paymedia.test.project.entity.Department;
 import com.paymedia.test.project.entity.Employee;
 import com.paymedia.test.project.repository.DepartmentRepository;
@@ -19,37 +20,57 @@ public class EmployeeService {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    public Employee saveEmployee(Employee employee) {
-        return employeeRepository.save(employee);
+    public EmployeeDTO saveEmployee(EmployeeDTO employeeDto) {
+        Employee employee = populateEmployee(employeeDto);
+        Employee emp = employeeRepository.save(employee);
+        return populateEmployeeDTO(emp);
     }
 
-    public Employee getEmployeeById(Long id) {
-        return employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with id " + id));
+    public EmployeeDTO getEmployeeById(Long id) {
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with id " + id));
+        return populateEmployeeDTO(employee);
     }
 
-    public Employee updateEmployee(Long id, Employee employeeDetails) {
-        Employee employee = getEmployeeById(id);
-        employee.setFirstName(employeeDetails.getFirstName());
-        employee.setLastName(employeeDetails.getLastName());
-        employee.setEmail(employeeDetails.getEmail());
-        employee.setPhone(employeeDetails.getPhone());
-
-        Department department = departmentRepository.findByName(employeeDetails.getDepartment().getName()).orElseThrow(() -> new EntityNotFoundException("Department not found"));
-        employee.setDepartment(department);
-
-        return employeeRepository.save(employee);
+    public EmployeeDTO updateEmployee(EmployeeDTO employeeDto) {
+        Employee employee = populateEmployee(employeeDto);
+        Employee res = employeeRepository.save(employee);
+        return populateEmployeeDTO(res);
     }
 
     public void deleteEmployee(Long id) {
-        Employee employee = getEmployeeById(id);
+        EmployeeDTO employeeDto = getEmployeeById(id);
+        Employee employee = populateEmployee(employeeDto);
         employeeRepository.delete(employee);
     }
 
     public Page<Employee> getAllEmployees(String departmentName, Pageable pageable) {
         if (departmentName != null) {
             Department department = departmentRepository.findByName(departmentName).orElseThrow(() -> new EntityNotFoundException("Department not found"));
-            return employeeRepository.findAllByDepartment(department, pageable);
+            return employeeRepository.findAllByDepartment(department.getId(), pageable);
         }
         return employeeRepository.findAll(pageable);
     }
+
+    public Employee populateEmployee(EmployeeDTO employeeDto){
+        Employee employee = new Employee();
+        employee.setFirstName(employeeDto.getFirstName());
+        employee.setLastName(employeeDto.getLastName());
+        employee.setPhone(employeeDto.getPhone());
+        employee.setEmail(employeeDto.getEmail());
+        employee.setDepartment(employeeDto.getDepartmentId());
+        return employee;
+    }
+
+    public EmployeeDTO populateEmployeeDTO(Employee emp){
+        EmployeeDTO empDTO = new EmployeeDTO();
+        empDTO.setId(emp.getId());
+        empDTO.setFirstName(emp.getFirstName());
+        empDTO.setFirstName(emp.getLastName());
+        empDTO.setEmail(emp.getEmail());
+        empDTO.setPhone(emp.getPhone());
+        empDTO.setDepartmentId(emp.getDepartment());
+        return empDTO;
+    }
+
+
 }

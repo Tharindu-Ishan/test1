@@ -29,7 +29,6 @@ public class Employee {
     @Column(name = "phone")
     private String phone;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
+    @Column(name = "department_id")
+    private Long department;
 }

@@ -23,6 +23,4 @@ public class Department {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "departments")
-    private List<Employee> employees = new ArrayList<>();
 }
