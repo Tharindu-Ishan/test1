@@ -65,7 +65,7 @@ public class EmployeeService {
         EmployeeDTO empDTO = new EmployeeDTO();
         empDTO.setId(emp.getId());
         empDTO.setFirstName(emp.getFirstName());
-        empDTO.setFirstName(emp.getLastName());
+        empDTO.setLastName(emp.getLastName());
         empDTO.setEmail(emp.getEmail());
         empDTO.setPhone(emp.getPhone());
         empDTO.setDepartmentId(emp.getDepartment());
